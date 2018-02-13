@@ -48,7 +48,7 @@ If you uses in a ARM architecture, maybe will be necessary compile **adb**. In t
 EOF\n
 ```
 
-* <METHOD>: `GET`, `POST`, `PUT`, `DELETE`
+* <METHOD>: `GET`, `POST`, `PUT`, `DELETE`, `SYSTEM`
 * <DATA>: Json data. If none, send `'{}'`
 * <URL>: http://pedalpi.github.io/WebService/
 * EOF: The string "EOF". 
@@ -64,9 +64,34 @@ EOF
 ### Response
 
 ```
-METHOD DATA
+RESPONSE <DATA>
 ```
+
+* <METHOD>: `GET`, `POST`, `PUT`, `DELETE`
+* <DATA>: Json data. If none, send `'{}'` 
+
+### Notification
+
+This corresponds the websocket data notifications 
+
+```
+<METHOD> <DATA>
+```
+
+* <METHOD>: `BANK_UPDATED`, `PEDALBOARD_UPDATED`, `EFFECT_UPDATED`, `EFFECT_STATUS_TOGGLED`, `PARAM_VALUE_CHANGE`, `CONNECTION_UPDATED`
+* <DATA>: Json data. If none, send `'{}'` 
 
 ### Initialization 
 
-1. AndroidController component connect with the app and sends the current pedalboard json data 
+After the connection has been realized,
+
+1. Application send
+```
+SYSTEM /
+{"message": "connected"}
+EOF
+```
+1. AndroidController component connect with the app and send the current pedalboard json data
+```bazaar
+
+```

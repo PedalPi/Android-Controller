@@ -1,5 +1,7 @@
 import os
 
+from pluginsmanager.observer.update_type import UpdateType
+
 from application.component.component import Component
 from application.controller.current_controller import CurrentController
 
@@ -26,7 +28,17 @@ class AndroidController(Component):
         self.register_observer(self.observer)
         self.client.run()
 
-        self.client.connected_listener = lambda: self.client.send(Message(MessageType.PEDALBOARD, self.current_pedalboard.json))
+        self.client.connected_listener = lambda: self._on_connected()
+
+    def _on_connected(self):
+        data = {
+            'pedalboard': self.current_pedalboard.json,
+            'update_type': str(UpdateType.UPDATED),
+            'index': self.current_pedalboard.index,
+            'origin': None
+        }
+
+        self.client.send(Message(MessageType.PEDALBOARD_UPDATED, data))
 
     def start_android_application(self, port, activity):
         os.system(self.adb_command + ' shell am start -n ' + activity)
@@ -38,14 +50,14 @@ class AndroidController(Component):
 
         current_pedalboard = self.current_pedalboard
 
-        if message.message_type == MessageType.EFFECT:
+        if message.message_type == MessageType.EFFECT_UPDATED:
             effect_index = message['index']
             effect = current_pedalboard.effects[effect_index]
 
             controller = self.controller(effect_controller)
             controller.toggleStatus(effect, self.token)
 
-        elif message.message_type == MessageType.PARAM:
+        elif message.message_type == MessageType.PARAM_VALUE_CHANGE:
             effect_index = message['effect']
             param_index = message['param']
             value = message['value']

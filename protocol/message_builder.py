@@ -1,29 +1,42 @@
 import json
 
 from android_controller.protocol.message import Message
-from android_controller.protocol.message_type import MessageType
+from android_controller.protocol.message_type import Verb
 
 
 class MessageBuilder(object):
+    buffer = []
+
     @staticmethod
     def generate(message):
-        strings = message.split(" ")
+        if message != "EOF":
+            MessageBuilder.buffer.append(message)
+            return None
 
-        protocol_type = MessageBuilder.search_type(strings[0])
+        buffer = MessageBuilder.clean_buffer()
 
-        return MessageBuilder.generate_message(strings, protocol_type)
+        verb, path = buffer[0].split(" ")
+        data = buffer[1]
+
+        verb = MessageBuilder.discover_verb(verb)
+
+        return MessageBuilder.generate_message(verb, path, data)
 
     @staticmethod
-    def search_type(word):
-        for protocol_type in MessageType:
-            if protocol_type.value == word:
-                return protocol_type
-
-        return MessageType.ERROR
+    def clean_buffer():
+        buffer = MessageBuilder.buffer
+        MessageBuilder.buffer = []
+        return buffer
 
     @staticmethod
-    def generate_message(strings, protocol_type):
-        if len(strings) == 2:
-            return Message(protocol_type, json.loads(strings[1]))
-        else:
-            return Message(protocol_type)
+    def discover_verb(word):
+        for verb in Verb:
+            if verb.value == word:
+                return verb
+
+        return Verb.SYSTEM
+
+    @staticmethod
+    def generate_message(verb, path, data):
+        # FIXME - Use path
+        return Message(verb, json.loads(data))

@@ -24,7 +24,9 @@ class AndroidControllerClient(object):
             data = yield self.stream.read_until('\n'.encode(self.encoding))
             data = data.decode(self.encoding).strip()
 
-            self.message_listener(MessageBuilder.generate(data))
+            generated = MessageBuilder.generate(data)
+            if generated is not None:
+                self.message_listener(generated)
 
     def send(self, message):
         text = str(message).encode(self.encoding)
