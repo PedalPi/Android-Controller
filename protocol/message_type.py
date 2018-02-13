@@ -2,11 +2,14 @@ from enum import Enum
 
 
 class MessageType(Enum):
+    CONNECTED = "connected"
 
-    ACK = "ack"
+    BANK = "bank"
+    PEDALBOARD = "patch"
     EFFECT = "effect"
     PARAM = "param"
-    PATCH = "patch"
+
+    ACK = "ack"
     ERROR = "error"
 
     def __str__(self):

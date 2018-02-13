@@ -11,10 +11,11 @@ This code contains the communication with the android [PedalPi-Display-View](htt
 Like described in [Application documentation](http://pedalpi-application.readthedocs.io/en/latest/), create a `start.py` and register AndroidController component.
 
 ```python
+import sys
 import tornado
 
 sys.path.append('application')
-sys.path.append(('android_controller')
+sys.path.append('android_controller')
 
 from application.Application import Application
 from android_controller.android_controller import AndroidController
@@ -36,3 +37,36 @@ tornado.ioloop.IOLoop.current().start()
 
 If you uses in a ARM architecture, maybe will be necessary compile **adb**. In these cases, the project https://github.com/PedalPi/adb-arm can help you.
 **adb-arm** PedalPi _fork_ already contains some binaries for RaspberryPi.
+
+## Protocol
+
+### Request
+
+```
+<METHOD> <URL>\n
+<DATA>\n
+EOF\n
+```
+
+* <METHOD>: `GET`, `POST`, `PUT`, `DELETE`
+* <DATA>: Json data. If none, send `'{}'`
+* <URL>: http://pedalpi.github.io/WebService/
+* EOF: The string "EOF". 
+
+Example:
+
+```
+PUT /current/bank/1/pedalboard/3
+{}
+EOF
+```
+
+### Response
+
+```
+METHOD DATA
+```
+
+### Initialization 
+
+1. AndroidController component connect with the app and sends the current pedalboard json data 

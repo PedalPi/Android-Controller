@@ -1,20 +1,19 @@
 from android_controller.protocol.message import Message
 from android_controller.protocol.message_type import MessageType
 
-from application.model.UpdatesObserver import UpdatesObserver
+from application.component.application_observer import ApplicationObserver
 
 
 class AndroidUpdatesObserver(ApplicationObserver):
+
     def __init__(self, client):
+        super().__init__()
         self.client = client
 
-    def onBankUpdate(self, bank, update_type, token=None):
+    def on_bank_updated(self, bank, update_type, index, origin, **kwargs):
         pass
 
-    def onParamValueChange(self, param, token=None):
-        if token == self.token:
-            return
-
+    def on_param_value_changed(self, param, **kwargs):
         effect = param.effect
 
         data = {
@@ -25,28 +24,19 @@ class AndroidUpdatesObserver(ApplicationObserver):
         message = Message(MessageType.PARAM, data)
         self.client.send(message)
 
-    def onEffectStatusToggled(self, effect, token=None):
-        if token == self.token:
-            return
-
+    def on_effect_status_toggled(self, effect, **kwargs):
         message = Message(MessageType.EFFECT, {'index': effect.index})
         self.client.send(message)
 
-    def onEffectUpdated(self, effect, update_type, token=None):
-        if token == self.token:
-            return
-
+    def on_effect_updated(self, effect, update_type, index, origin, **kwargs):
         pass
 
-    def onCurrentPatchChange(self, patch, token=None):
-        if token == self.token:
-            return
-
-        message = Message(MessageType.PATCH, patch.json)
+    def on_current_pedalboard_changed(self, pedalboard, **kwargs):
+        message = Message(MessageType.PATCH, pedalboard.json)
         self.client.send(message)
 
-    def onPatchUpdated(self, patch, update_type, token=None):
-        if token == self.token:
-            return
+    def on_pedalboard_updated(self, pedalboard, update_type, index, origin, **kwargs):
+        pass
 
+    def on_connection_updated(self, connection, update_type, pedalboard, **kwargs):
         pass
