@@ -91,7 +91,23 @@ SYSTEM /
 {"message": "connected"}
 EOF
 ```
-1. AndroidController component connect with the app and send the current pedalboard json data
-```bazaar
-
+1. Application request the current pedalboard number
+```
+GET /current
+{}
+EOF
+```
+  * Response 
+```
+RESPONSE { "bank": 1, "pedalboard": 0 }
+```
+1. Application request the current pedalboard data
+```
+GET /bank/1/pedalboard/0
+{}
+EOF
+```
+  * Response
+```
+RESPONSE { "name": "My pedalboard", "effects": [], "connections": [], "data": {} }
 ```
