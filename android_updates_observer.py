@@ -4,10 +4,9 @@ from android_controller.protocol.message_type import MessageType
 from application.model.UpdatesObserver import UpdatesObserver
 
 
-class AndroidUpdatesObserver(UpdatesObserver):
-    def __init__(self, client, token):
+class AndroidUpdatesObserver(ApplicationObserver):
+    def __init__(self, client):
         self.client = client
-        self.token = token
 
     def onBankUpdate(self, bank, update_type, token=None):
         pass

@@ -1,22 +1,19 @@
 import os
-
 from android_controller.android_controller_client import AndroidControllerClient
 from android_controller.android_updates_observer import AndroidUpdatesObserver
 from android_controller.protocol.message import Message
 from android_controller.protocol.message_type import MessageType
-
+from application.application.controller import current_controller
+from application.application.controller import effect_controller
+from application.application.controller import param_controller
 from application.architecture.Component import Component
-from application.controller.CurrentController import CurrentController
-from application.controller.EffectController import EffectController
-from application.controller.ParamController import ParamController
 
 
 class AndroidController(Component):
     def __init__(self, application, adb_command="adb"):
         super(AndroidController, self).__init__(application)
         self.client = AndroidControllerClient('localhost', 8888)
-        self.token = self.__class__.__name__
-        self.observer = AndroidUpdatesObserver(self.client, token=self.token)
+        self.observer = AndroidUpdatesObserver(self.client)
         self.adb_command = adb_command
 
     def init(self):
@@ -44,7 +41,7 @@ class AndroidController(Component):
             effect_index = message['index']
             effect = current_patch.effects[effect_index]
 
-            controller = self.controller(EffectController)
+            controller = self.controller(effect_controller)
             controller.toggleStatus(effect, self.token)
 
         elif message.message_type == MessageType.PARAM:
@@ -55,10 +52,10 @@ class AndroidController(Component):
             effect = current_patch.effects[effect_index]
             param = effect.params[param_index]
 
-            controller = self.controller(ParamController)
+            controller = self.controller(param_controller)
             controller.updateValue(param, value, self.token)
 
     @property
     def current_patch(self):
-        controller = self.controller(CurrentController)
-        return controller.currentPatch
+        controller = self.controller(current_controller)
+        return controller.current_patch

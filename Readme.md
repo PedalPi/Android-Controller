@@ -13,10 +13,8 @@ Like described in [Application documentation](http://pedalpi-application.readthe
 ```python
 import tornado
 
-from load_module import load_module
-
-load_module('application')
-load_module('android_controller')
+sys.path.append('application')
+sys.path.append(('android_controller')
 
 from application.Application import Application
 from android_controller.android_controller import AndroidController
@@ -24,7 +22,7 @@ from android_controller.android_controller import AndroidController
 address = 'localhost'
 port = 3000
 
-application = Application(data_patch="data/", address=address, test=True)
+application = Application(path_data="data/", address=address, test=True)
 application.register(AndroidController(application, "adb"))
 
 application.start()
