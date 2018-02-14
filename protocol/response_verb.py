@@ -1,7 +1,9 @@
 from enum import Enum
 
 
-class MessageType(Enum):
+class ResponseVerb(Enum):
+    RESPONSE = "RESPONSE"
+
     BANK_UPDATED = "BANK_UPDATED"
     PEDALBOARD_UPDATED = "PEDALBOARD_UPDATED"
     EFFECT_UPDATED = "EFFECT_UPDATED"

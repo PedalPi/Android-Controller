@@ -1,15 +1,8 @@
-import os
-
 from application.component.component import Component
-from application.controller.current_controller import CurrentController
-from pluginsmanager.observer.update_type import UpdateType
 
 from android_controller.adb import Adb
 from android_controller.android_controller_client import AndroidControllerClient
-from android_controller.android_updates_observer import AndroidUpdatesObserver
 from android_controller.request_message_processor import RequestMessageProcessor
-from android_controller.protocol.message import Message
-from android_controller.protocol.message_type import MessageType
 
 
 class AndroidController(Component):
@@ -26,18 +19,16 @@ class AndroidController(Component):
         super(AndroidController, self).__init__(application)
 
         self._client = AndroidControllerClient('localhost', AndroidController.port)
-        self._observer = AndroidUpdatesObserver(self._client)
         self.adb = Adb(adb_command, application.log)
         self.request_message_processor = RequestMessageProcessor(ws_port)
 
     def init(self):
-        self.register_observer(self._observer)
+        self._client.connected_listener = self._on_connected
+        self._client.message_listener = self._process_message
+
+        self.request_message_processor.processed_listener = self._on_processed
 
         self.adb.start(AndroidController.port, AndroidController.activity)
-
-        self._client.message_listener = self._process_message
-        self._client.connected_listener = self._on_connected
-
         self._client.connect()
 
     def close(self):
@@ -46,44 +37,11 @@ class AndroidController(Component):
 
     def _on_connected(self):
         self.application.log('AndroidController - DisplayView connected')
-        return
-
-        data = {
-            'pedalboard': self.current_pedalboard.json,
-            'update_type': str(UpdateType.UPDATED),
-            'index': self.current_pedalboard.index,
-            'origin': None
-        }
-
-        self._client.send(Message(MessageType.PEDALBOARD_UPDATED, data))
 
     def _process_message(self, message):
         self.application.log('AndroidController - Message received: {}', message)
 
         self.request_message_processor.process(message)
-        return
 
-        current_pedalboard = self.current_pedalboard
-
-        if message.message_type == MessageType.EFFECT_UPDATED:
-            effect_index = message['index']
-            effect = current_pedalboard.effects[effect_index]
-
-            controller = self.controller(effect_controller)
-            controller.toggleStatus(effect, self.token)
-
-        elif message.message_type == MessageType.PARAM_VALUE_CHANGE:
-            effect_index = message['effect']
-            param_index = message['param']
-            value = message['value']
-
-            effect = current_pedalboard.effects[effect_index]
-            param = effect.params[param_index]
-
-            controller = self.controller(current_pedalboard)
-            controller.updateValue(param, value, self.token)
-
-    @property
-    def current_pedalboard(self):
-        return self.controller(CurrentController).pedalboard
-
+    def _on_processed(self, request_message, response_message):
+        self._client.send(response_message)

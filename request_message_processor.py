@@ -10,6 +10,7 @@ class RequestMessageProcessor(object):
     def __init__(self, port):
         self.http_client = AsyncHTTPClient()
         self.url = 'http://localhost:{}'.format(port)
+        self.on_processed = lambda message, response: ...
 
     def process(self, message):
         """

@@ -1,7 +1,7 @@
 import json
 
 from android_controller.protocol.request_message import RequestMessage
-from android_controller.protocol.verb import Verb
+from android_controller.protocol.request_verb import RequestVerb
 
 
 class MessageBuilder(object):
@@ -34,16 +34,16 @@ class MessageBuilder(object):
 
     @staticmethod
     def discover_verb(word):
-        for verb in Verb:
+        for verb in RequestVerb:
             if verb.value == word:
                 return verb
 
-        return Verb.SYSTEM
+        return RequestVerb.SYSTEM
 
     @staticmethod
     def generate_request_message(verb, path, data):
         """
-        :param string verb: Verb
+        :param RequestVerb verb: Verb
         :param string path: Path
         :param string data: Data
         :return RequestMessage: message generated

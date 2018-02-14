@@ -1,11 +1,11 @@
-from android_controller.protocol.verb import Verb
+from android_controller.protocol.request_verb import RequestVerb
 
 
 class RequestMessage(object):
     """
     Message send form the app to the AndroidController
 
-    :param Verb verb:
+    :param RequestVerb verb:
     :param string path:
     :param dict content:
     """

@@ -92,17 +92,23 @@ SYSTEM /
 {"message": "connected"}
 EOF
 ```
-1. Application request the current pedalboard number
+
+### After initialization
+
+The application can be request thinks, like:
+
+ * The current pedalboard number
 ```
 GET /v1/current
 {}
 EOF
 ```
-  * Response 
+ * Response 
 ```
 RESPONSE { "bank": 1, "pedalboard": 0 }
 ```
-1. Application request the current pedalboard data
+
+ * The pedalboard data
 ```
 GET /v1/bank/1/pedalboard/0
 {}

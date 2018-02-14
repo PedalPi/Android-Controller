@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Verb(Enum):
+class RequestVerb(Enum):
     SYSTEM = "SYSTEM"
     GET = "GET"
     POST = "POST"
