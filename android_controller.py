@@ -7,7 +7,7 @@ from pluginsmanager.observer.update_type import UpdateType
 from android_controller.adb import Adb
 from android_controller.android_controller_client import AndroidControllerClient
 from android_controller.android_updates_observer import AndroidUpdatesObserver
-from android_controller.message_processor import MessageProcessor
+from android_controller.request_message_processor import RequestMessageProcessor
 from android_controller.protocol.message import Message
 from android_controller.protocol.message_type import MessageType
 
@@ -28,7 +28,7 @@ class AndroidController(Component):
         self._client = AndroidControllerClient('localhost', AndroidController.port)
         self._observer = AndroidUpdatesObserver(self._client)
         self.adb = Adb(adb_command, application.log)
-        self.message_processor = MessageProcessor(ws_port)
+        self.request_message_processor = RequestMessageProcessor(ws_port)
 
     def init(self):
         self.register_observer(self._observer)
@@ -41,11 +41,12 @@ class AndroidController(Component):
         self._client.connect()
 
     def close(self):
-        self.message_processor.close()
+        self.request_message_processor.close()
         self.adb.close(AndroidController.port)
 
     def _on_connected(self):
         self.application.log('AndroidController - DisplayView connected')
+        return
 
         data = {
             'pedalboard': self.current_pedalboard.json,
@@ -58,6 +59,9 @@ class AndroidController(Component):
 
     def _process_message(self, message):
         self.application.log('AndroidController - Message received: {}', message)
+
+        self.request_message_processor.process(message)
+        return
 
         current_pedalboard = self.current_pedalboard
 

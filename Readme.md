@@ -14,6 +14,7 @@ Like described in [Application documentation](http://pedalpi-application.readthe
 import sys
 import tornado
 
+# DEPRECATED
 sys.path.append('application')
 sys.path.append('android_controller')
 
@@ -93,7 +94,7 @@ EOF
 ```
 1. Application request the current pedalboard number
 ```
-GET /current
+GET /v1/current
 {}
 EOF
 ```
@@ -103,7 +104,7 @@ RESPONSE { "bank": 1, "pedalboard": 0 }
 ```
 1. Application request the current pedalboard data
 ```
-GET /bank/1/pedalboard/0
+GET /v1/bank/1/pedalboard/0
 {}
 EOF
 ```
