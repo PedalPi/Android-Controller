@@ -44,4 +44,6 @@ class AndroidController(Component):
         self.request_message_processor.process(message)
 
     def _on_processed(self, request_message, response_message):
+        self.application.log('AndroidController - Message sent: {}', response_message)
+
         self._client.send(response_message)

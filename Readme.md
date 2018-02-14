@@ -78,7 +78,7 @@ This corresponds the websocket data notifications
 ```
 <METHOD> <DATA>
 ```
-
+DEPRECATED
 * <METHOD>: `BANK_UPDATED`, `PEDALBOARD_UPDATED`, `EFFECT_UPDATED`, `EFFECT_STATUS_TOGGLED`, `PARAM_VALUE_CHANGE`, `CONNECTION_UPDATED`
 * <DATA>: Json data. If none, send `'{}'` 
 
