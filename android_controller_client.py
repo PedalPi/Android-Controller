@@ -12,11 +12,11 @@ class AndroidControllerClient(object):
         self.encoding = encoding
 
         self.stream = None
-        self.message_listener = lambda message: print(message)
+        self.message_listener = lambda message: ...
         self.connected_listener = lambda: ...
 
     @gen.coroutine
-    def run(self):
+    def connect(self):
         self.stream = yield TCPClient().connect(self.address, self.port)
         self.connected_listener()
 

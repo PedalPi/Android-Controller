@@ -1,12 +1,13 @@
 import os
 
-from pluginsmanager.observer.update_type import UpdateType
-
 from application.component.component import Component
 from application.controller.current_controller import CurrentController
+from pluginsmanager.observer.update_type import UpdateType
 
+from android_controller.adb import Adb
 from android_controller.android_controller_client import AndroidControllerClient
 from android_controller.android_updates_observer import AndroidUpdatesObserver
+from android_controller.message_processor import MessageProcessor
 from android_controller.protocol.message import Message
 from android_controller.protocol.message_type import MessageType
 
@@ -15,22 +16,37 @@ class AndroidController(Component):
     port = 8888
     activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.pedalpi_display.MainActivity'
 
-    def __init__(self, application, adb_command="adb"):
+    def __init__(self, application, ws_port, adb_command="adb"):
+        """
+        :param Application application: that AndroidController will be executed
+        :param int ws_port:
+        :param string adb_command: Command that call the Android Debug Bridge
+                                   In Raspberry maybe be a `./adb` executable file
+        """
         super(AndroidController, self).__init__(application)
 
-        self.client = AndroidControllerClient('localhost', AndroidController.port)
-        self.observer = AndroidUpdatesObserver(self.client)
-        self.adb_command = adb_command
+        self._client = AndroidControllerClient('localhost', AndroidController.port)
+        self._observer = AndroidUpdatesObserver(self._client)
+        self.adb = Adb(adb_command, application.log)
+        self.message_processor = MessageProcessor(ws_port)
 
     def init(self):
-        self.start_android_application(AndroidController.port, AndroidController.activity)
-        self.client.message_listener = self.process_message
-        self.register_observer(self.observer)
-        self.client.run()
+        self.register_observer(self._observer)
 
-        self.client.connected_listener = lambda: self._on_connected()
+        self.adb.start(AndroidController.port, AndroidController.activity)
+
+        self._client.message_listener = self._process_message
+        self._client.connected_listener = self._on_connected
+
+        self._client.connect()
+
+    def close(self):
+        self.message_processor.close()
+        self.adb.close(AndroidController.port)
 
     def _on_connected(self):
+        self.application.log('AndroidController - DisplayView connected')
+
         data = {
             'pedalboard': self.current_pedalboard.json,
             'update_type': str(UpdateType.UPDATED),
@@ -38,15 +54,10 @@ class AndroidController(Component):
             'origin': None
         }
 
-        self.client.send(Message(MessageType.PEDALBOARD_UPDATED, data))
+        self._client.send(Message(MessageType.PEDALBOARD_UPDATED, data))
 
-    def start_android_application(self, port, activity):
-        os.system(self.adb_command + ' shell am start -n ' + activity)
-        os.system(self.adb_command + ' forward --remove-all')
-        os.system(self.adb_command + ' forward tcp:' + str(port) + ' tcp:' + str(port))
-
-    def process_message(self, message):
-        print("Message received:", message)
+    def _process_message(self, message):
+        self.application.log('AndroidController - Message received: {}', message)
 
         current_pedalboard = self.current_pedalboard
 
