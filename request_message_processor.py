@@ -37,7 +37,7 @@ class RequestMessageProcessor(object):
         :return:
         """
         try:
-            response_message = ResponseMessage(ResponseVerb.RESPONSE, response.body)
+            response_message = ResponseMessage(ResponseVerb.RESPONSE, response.body.decode('utf8'))
 
         except HTTPError as e:
             # HTTPError is raised for non-200 responses; the response

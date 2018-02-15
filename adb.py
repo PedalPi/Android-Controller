@@ -15,7 +15,8 @@ class Adb(object):
 
     def start(self, port, activity):
         self.execute('shell am start -n {}'.format(activity))
-        self.execute('forward --remove-all')
+        #FIXME delay?
+        #self.execute('forward --remove-all')
         self.execute('forward tcp:{} tcp:{}'.format(port, port))
 
     def execute(self, command):
