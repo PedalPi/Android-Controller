@@ -4,7 +4,7 @@ from android_controller.android_controller_client import AndroidControllerClient
 from android_controller.request_message_processor import RequestMessageProcessor
 
 
-class AndroidController(Component):
+class WebServiceSerial(Component):
     port = 8888
 
     def __init__(self, application, target, ws_port=3000):
@@ -13,10 +13,10 @@ class AndroidController(Component):
         :param Target target: Device protocol expected to communication
         :param int ws_port: WebService port
         """
-        super(AndroidController, self).__init__(application)
+        super(WebServiceSerial, self).__init__(application)
 
         self.target = target
-        self._client = AndroidControllerClient('localhost', AndroidController.port)
+        self._client = AndroidControllerClient('localhost', WebServiceSerial.port)
         self.request_message_processor = RequestMessageProcessor(ws_port)
 
     def init(self):
@@ -25,7 +25,7 @@ class AndroidController(Component):
 
         self.request_message_processor.processed_listener = self._on_processed
 
-        self.target.init(self.application, AndroidController.port)
+        self.target.init(self.application, WebServiceSerial.port)
         self._client.connect()
 
     def close(self):
