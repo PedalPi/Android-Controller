@@ -23,7 +23,7 @@ def readme():
         return f.read()
 
 setup(
-    name='PedalPi-WebService-Serial',
+    name='PedalPi-WebServiceSerial',
     version='0.2.0',
 
     description='WebService bind to serial communication',
@@ -48,7 +48,7 @@ setup(
     package_data={},
 
     install_requires=[
-        'PedalPi-WebService>=0.4.0',
+        'PedalPi-WebService>=0.3.0',
     ],
 
     classifiers=[

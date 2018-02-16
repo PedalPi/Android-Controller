@@ -165,3 +165,9 @@ The connected device can be request thinks, like:
 .. _DisplayView: https://github.com/PedalPi/DisplayView
 .. _Application documentation: http://pedalpi-application.readthedocs.io/en/latest/
 .. _WebService documentation: http://pedalpi.github.io/WebService/
+
+Scripts
+=======
+
+Install locally to develop
+python setup.py develop
