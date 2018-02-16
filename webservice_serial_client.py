@@ -1,10 +1,10 @@
-from android_controller.protocol.message_builder import MessageBuilder
-
 from tornado import gen
 from tornado.tcpclient import TCPClient
 
+from webservice_serial.protocol.message_builder import MessageBuilder
 
-class AndroidControllerClient(object):
+
+class WebServiceSerialClient(object):
 
     def __init__(self, address, port, encoding="utf-8"):
         self.address = address

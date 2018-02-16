@@ -1,7 +1,7 @@
 from application.component.component import Component
 
-from android_controller.android_controller_client import AndroidControllerClient
-from android_controller.request_message_processor import RequestMessageProcessor
+from webservice_serial.webservice_serial_client import WebServiceSerialClient
+from webservice_serial.request_message_processor import RequestMessageProcessor
 
 
 class WebServiceSerial(Component):
@@ -16,7 +16,7 @@ class WebServiceSerial(Component):
         super(WebServiceSerial, self).__init__(application)
 
         self.target = target
-        self._client = AndroidControllerClient('localhost', WebServiceSerial.port)
+        self._client = WebServiceSerialClient('localhost', WebServiceSerial.port)
         self.request_message_processor = RequestMessageProcessor(ws_port)
 
     def init(self):

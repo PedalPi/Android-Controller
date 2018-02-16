@@ -1,7 +1,7 @@
 import json
 
-from android_controller.protocol.request_message import RequestMessage
-from android_controller.protocol.request_verb import RequestVerb
+from webservice_serial.protocol.request_message import RequestMessage
+from webservice_serial.protocol.request_verb import RequestVerb
 
 
 class MessageBuilder(object):

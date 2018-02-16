@@ -1,10 +1,8 @@
-import json
-
 from tornado.httpclient import HTTPRequest, AsyncHTTPClient, HTTPError
-from android_controller.protocol.request_verb import RequestVerb
-from android_controller.protocol.response_message import ResponseMessage
-from android_controller.protocol.response_verb import ResponseVerb
-from android_controller.protocol.response_verb import ResponseVerb
+
+from webservice_serial.protocol.request_verb import RequestVerb
+from webservice_serial.protocol.response_message import ResponseMessage
+from webservice_serial.protocol.response_verb import ResponseVerb
 
 
 class RequestMessageProcessor(object):

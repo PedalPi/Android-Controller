@@ -1,4 +1,4 @@
-from android_controller.protocol.request_verb import RequestVerb
+from webservice_serial.protocol.request_verb import RequestVerb
 
 
 class RequestMessage(object):
