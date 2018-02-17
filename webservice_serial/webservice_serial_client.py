@@ -31,3 +31,7 @@ class WebServiceSerialClient(object):
     def send(self, message):
         text = str(message).encode(self.encoding)
         self.stream.write(text)
+
+    def close(self):
+        if self.stream is not None:
+            self.stream.close()

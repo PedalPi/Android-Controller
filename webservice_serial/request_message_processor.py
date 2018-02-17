@@ -10,10 +10,11 @@ class RequestMessageProcessor(object):
     :param port: Port that WebService are executing
     """
 
-    def __init__(self, port):
+    def __init__(self, port, token=None):
         self.http_client = AsyncHTTPClient()
         self.url = 'http://localhost:{}'.format(port)
         self.processed_listener = lambda message, response: ...
+        self.token = token
 
     def process(self, message):
         """
@@ -22,11 +23,18 @@ class RequestMessageProcessor(object):
         if message.verb is RequestVerb.SYSTEM:
             return
 
-        request = HTTPRequest(self.url + message.path, method=message.verb.value)
+        request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers)
         self.http_client.fetch(
             request,
             lambda response: self.response(message, response=response)
         )
+
+    @property
+    def headers(self):
+        if self.token is not None:
+            return {'x-xsrf-token': self.token}
+        else:
+            return None
 
     def response(self, message, response):
         """
@@ -53,3 +61,10 @@ class RequestMessageProcessor(object):
 
     def close(self):
         self.http_client.close()
+
+    def process_event(self, message):
+        """
+        :param dict message:
+        :return ResponseMessage:
+        """
+        return ResponseMessage(ResponseVerb.EVENT, str(message))
