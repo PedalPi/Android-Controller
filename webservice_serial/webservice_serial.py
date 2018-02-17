@@ -18,6 +18,8 @@ from webservice_serial.request_message_processor import RequestMessageProcessor
 from webservice_serial.webservice_serial_client import WebServiceSerialClient
 from webservice_serial.websocket_client import WebSocketClient
 
+from time import sleep
+
 
 class WebServiceSerial(Component):
     port = 8888
@@ -38,15 +40,21 @@ class WebServiceSerial(Component):
     def init(self):
         self._client.connected_listener = self._on_connected
         self._client.message_listener = self._process_message
+        self._client.disconnected_listener = lambda: self._try_connect(5)
 
         self.request_message_processor.processed_listener = self._on_processed
-
-        self.target.init(self.application, WebServiceSerial.port)
 
         self._websocket_client.token_defined_listener = self._on_token_defined
         self._websocket_client.message_listener = self._on_event
 
         self._websocket_client.connect()
+
+        self._try_connect()
+
+    def _try_connect(self, delay=0):
+        self._log('Trying to connect with {}', self.target.name)
+        self.target.init(self.application, WebServiceSerial.port)
+        sleep(delay)
         self._client.connect()
 
     def _on_token_defined(self, token):
@@ -59,22 +67,25 @@ class WebServiceSerial(Component):
         self._client.close()
 
     def _on_connected(self):
-        self.application.log('AndroidController - DisplayView connected')
+        self._log('{} connected', self.target.name)
 
     def _process_message(self, message):
-        self.application.log('AndroidController - Message received: {}', message)
+        self._log('Message received: {}', message)
 
         self.request_message_processor.process(message)
 
     def _on_processed(self, request_message, response_message):
         response_message = self.target.process(request_message, response_message)
 
-        self.application.log('AndroidController - Message sent: {}', response_message)
+        self._log('Message sent: {}', response_message)
         self._client.send(response_message)
 
     def _on_event(self, message):
         response_message = self.request_message_processor.process_event(message)
         response_message = self.target.process(None, response_message)
 
-        self.application.log('AndroidController - Message sent: {}', response_message)
+        self._log('Message sent: {}', response_message)
         self._client.send(response_message)
+
+    def _log(self, message, *args, **kwargs):
+        self.application.log('{} - {}'.format(self.__class__.__name__, message), *args, **kwargs)

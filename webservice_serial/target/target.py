@@ -18,6 +18,10 @@ class Target(object):
         self.application = None
         self.port = None
 
+    @property
+    def name(self):
+        return self.__class__.__name__
+
     def init(self, application, port):
         """
         Target initialization
