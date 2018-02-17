@@ -1,4 +1,5 @@
 from tornado import gen
+from tornado.ioloop import IOLoop
 from tornado.tcpclient import TCPClient
 
 from webservice_serial.protocol.message_builder import MessageBuilder
@@ -15,8 +16,11 @@ class WebServiceSerialClient(object):
         self.message_listener = lambda message: ...
         self.connected_listener = lambda: ...
 
-    @gen.coroutine
     def connect(self):
+        IOLoop.current().spawn_callback(lambda: self._connect())
+
+    @gen.coroutine
+    def _connect(self):
         self.stream = yield TCPClient().connect(self.address, self.port)
         self.connected_listener()
 
