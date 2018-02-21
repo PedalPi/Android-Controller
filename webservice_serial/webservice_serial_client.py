@@ -82,4 +82,4 @@ class WebServiceSerialClient(object):
 
     def close(self):
         if self.stream is not None and not self.stream.closed():
-                self.stream.close()
+            self.stream.close()

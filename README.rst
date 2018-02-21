@@ -25,33 +25,14 @@ With it, is possible:
 
 .. _Apache License 2.0: https://github.com/PedalPi/WebServiceSerial/blob/master/LICENSE
 
-~How to use~ FIXME
-------------------
+Installation
+------------
 
-Like described in `Application documentation`_, create a ``start.py``
-and register AndroidController component.
+Install with pip:
 
-.. code:: python
+.. code-block:: bash
 
-    import sys
-    import tornado
-
-    # DEPRECATED
-    sys.path.append('application')
-    sys.path.append('android_controller')
-
-    from application.Application import Application
-    from android_controller.android_controller import AndroidController
-
-    address = 'localhost'
-    port = 3000
-
-    application = Application(path_data="data/", address=address, test=True)
-    application.register(AndroidController(application, "adb"))
-
-    application.start()
-
-    tornado.ioloop.IOLoop.current().start()
+    pip install PedalPi-PluginsManager
 
 Dependencies
 ~~~~~~~~~~~~
@@ -65,6 +46,42 @@ If you uses in a ARM architecture, maybe will be necessary compile
 can help you. **adb-arm** PedalPi *fork* already contains some binaries
 for RaspberryPi.
 
+How to use
+----------
+
+Like described in `Application documentation`_, create a ``start.py``
+and register AndroidController component.
+
+.. code:: python
+
+    # Imports application
+    from application.application import Application
+
+    address = 'localhost'
+    application = Application(path_data="data/", address=address)
+
+    # Register WebService before WebServiceSerial
+    from webservice.webservice import WebService
+    application.register(WebService(application))
+
+    # Register WebServiceSerial after WebService
+    from webservice_serial.webservice_serial import WebServiceSerial
+    from webservice_serial.target.android.android_display_view import AndroidDisplayView
+
+    target = AndroidDisplayView()
+    application.register(WebServiceSerial(application, target))
+
+    # Start Application
+    application.start()
+
+    import tornado
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        application.stop()
+
+
+
 Protocol
 --------
 
@@ -76,10 +93,12 @@ Request
 
 ::
 
-    <METHOD> <URL>\n
+    <IDENTIFIER> <METHOD> <URL>\n
     <DATA>\n
     EOF\n
 
+-  ``<IDENTIFIER>``: ``int`` that informs the request
+                     Responses will have the same identifier;
 -  ``<METHOD>``: ``GET``, ``POST``, ``PUT``, ``DELETE``, ``SYSTEM``
 -  ``<DATA>``: Json data. If none, send ``'{}'``
 -  ``<URL>``: http://pedalpi.github.io/WebService/
@@ -89,7 +108,7 @@ Example:
 
 ::
 
-    PUT /current/bank/1/pedalboard/3
+    1 PUT /current/bank/1/pedalboard/3
     {}
     EOF
 
@@ -98,8 +117,10 @@ Response
 
 ::
 
-    RESPONSE <DATA>
+    <IDENTIFIER> RESPONSE <DATA>
 
+-  ``<IDENTIFIER>``: ``int``. A response returns the same ``int`` that the request
+                              informs;
 -  ``RESPONSE``: String ``RESPONSES``;
 -  ``<DATA>``: Json data. If none, send ``'{}'``
 
@@ -110,7 +131,7 @@ This corresponds the websocket data notifications
 
 ::
 
-    EVENT <DATA>
+    <IDENTIFIER> EVENT <DATA>
 
 -  ``EVENT``: String ``EVENT``
 -  ``<DATA>``: Json data. If none, send ``'{}'``

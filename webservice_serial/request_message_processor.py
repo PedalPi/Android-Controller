@@ -50,14 +50,14 @@ class RequestMessageProcessor(object):
         else:
             return None
 
-    def response(self, message, response):
+    def response(self, request, http_response):
         """
-        :param RequestMessage message: Request message
-        :param HTTPResponse response: Response message
+        :param RequestMessage request: Request message
+        :param HTTPResponse http_response: WebService response message
         :return:
         """
         try:
-            response_message = ResponseMessage(ResponseVerb.RESPONSE, response.body.decode('utf8'))
+            response = ResponseMessage(ResponseVerb.RESPONSE, http_response.body.decode('utf8'), identifier=request.identifier)
 
         except HTTPError as e:
             # HTTPError is raised for non-200 responses; the response
@@ -71,7 +71,7 @@ class RequestMessageProcessor(object):
             print("Error: " + str(e))
             return
 
-        self.processed_listener(message, response_message)
+        self.processed_listener(request, response)
 
     def close(self):
         self.http_client.close()
@@ -81,4 +81,4 @@ class RequestMessageProcessor(object):
         :param dict message:
         :return ResponseMessage:
         """
-        return ResponseMessage(ResponseVerb.EVENT, str(message))
+        return ResponseMessage(ResponseVerb.EVENT, message)
