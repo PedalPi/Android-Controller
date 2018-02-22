@@ -40,7 +40,7 @@ class RequestMessageProcessor(object):
         request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers)
         self.http_client.fetch(
             request,
-            lambda response: self.response(message, response=response)
+            lambda http_response: self.response(message, http_response)
         )
 
     @property

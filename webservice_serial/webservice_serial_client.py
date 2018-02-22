@@ -77,8 +77,11 @@ class WebServiceSerialClient(object):
         return data
 
     def send(self, message):
-        text = str(message).encode(self.encoding)
-        self.stream.write(text)
+        try:
+            text = str(message).encode(self.encoding)
+            self.stream.write(text)
+        except StreamClosedError as e:
+            self.disconnected_listener()
 
     def close(self):
         if self.stream is not None and not self.stream.closed():
