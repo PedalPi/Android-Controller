@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tornado.httpclient import HTTPRequest, AsyncHTTPClient, HTTPError
+from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 
 from webservice_serial.protocol.request_verb import RequestVerb
 from webservice_serial.protocol.response_message import ResponseMessage
 from webservice_serial.protocol.response_verb import ResponseVerb
-import json
+
 
 class RequestMessageProcessor(object):
     """
@@ -57,11 +57,12 @@ class RequestMessageProcessor(object):
         :param HTTPResponse http_response: WebService response message
         :return:
         """
+        body = http_response.body.decode('utf8') if http_response.body is not None else None
+
         if http_response.code == 405:
-            response = ResponseMessage.error(http_response.body.decode('utf8'), request.identifier)
+            response = ResponseMessage.error(body, request.identifier)
         else:
-            response = ResponseMessage(ResponseVerb.RESPONSE, http_response.body.decode('utf8'),
-                                       identifier=request.identifier)
+            response = ResponseMessage(ResponseVerb.RESPONSE, body, identifier=request.identifier)
 
         self.processed_listener(request, response)
 

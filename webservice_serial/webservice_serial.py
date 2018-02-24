@@ -70,43 +70,6 @@ class WebServiceSerial(Component):
     def _on_connected(self):
         self._log('{} connected', self.target.name)
 
-        from webservice_serial.protocol.keyboard.keyboard import KeyEvent, KeyNumber, KeyCode
-        from webservice_serial.protocol.response_message import ResponseMessage
-        from webservice_serial.protocol.response_verb import ResponseVerb
-
-        from time import sleep
-        while True:
-        #    sleep(1)
-        #    self.target.adb.execute('shell input keyevent 19')
-        #    sleep(1)
-        #    self.target.adb.execute('shell input keyevent 20')
-            message = KeyEvent(KeyCode.DOWN, KeyNumber.DPAD_DOWN)
-            msg = ResponseMessage(ResponseVerb.KEYBOARD_EVENT, message)
-            self._log('Message sent: {}', msg)
-            self._client.send(msg)
-
-            message = KeyEvent(KeyCode.DOWN, KeyNumber.DPAD_DOWN)
-            msg = ResponseMessage(ResponseVerb.KEYBOARD_EVENT, message)
-            self._log('Message sent: {}', msg)
-            self._client.send(msg)
-
-            sleep(1)
-
-            message = KeyEvent(KeyCode.DOWN, KeyNumber.DPAD_UP)
-            msg = ResponseMessage(ResponseVerb.KEYBOARD_EVENT, message)
-            self._log('Message sent: {}', msg)
-            self._client.send(msg)
-
-            '''
-            sleep(1)
-
-            message = KeyEvent(KeyCode.DOWN, KeyNumber.DPAD_CENTER)
-            msg = ResponseMessage(ResponseVerb.KEYBOARD_EVENT, message)
-            self._log('Message sent: {}', msg)
-            self._client.send(msg)
-            '''
-            break
-
     def _process_message(self, message):
         """
         :param RequestMessage message:
