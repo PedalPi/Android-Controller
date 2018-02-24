@@ -20,5 +20,7 @@ class ResponseVerb(Enum):
     EVENT = "EVENT"
     KEYBOARD_EVENT = "KEYBOARD_EVENT"
 
+    ERROR = "ERROR"
+
     def __str__(self):
         return self.value

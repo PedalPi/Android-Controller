@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+from webservice_serial.protocol.response_verb import ResponseVerb
 
 
 class ResponseMessage(object):
@@ -21,6 +22,10 @@ class ResponseMessage(object):
     :param object content:
     :param int identifier:
     """
+
+    @staticmethod
+    def error(message, identifier=0):
+        return ResponseMessage(ResponseVerb.ERROR, '{"message": "'+message+'"}', identifier=identifier)
 
     def __init__(self, verb, content=None, identifier=0):
         self.identifier = identifier

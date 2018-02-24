@@ -63,4 +63,8 @@ class MessageBuilder(object):
         :param string data: Data
         :return RequestMessage: message generated
         """
-        return RequestMessage(identifier, verb, path, json.loads(data))
+        data = json.loads(data)
+        if verb == RequestVerb.GET:
+            data = None
+
+        return RequestMessage(identifier, verb, path, data)

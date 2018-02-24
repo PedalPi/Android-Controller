@@ -17,7 +17,7 @@ from tornado.httpclient import HTTPRequest, AsyncHTTPClient, HTTPError
 from webservice_serial.protocol.request_verb import RequestVerb
 from webservice_serial.protocol.response_message import ResponseMessage
 from webservice_serial.protocol.response_verb import ResponseVerb
-
+import json
 
 class RequestMessageProcessor(object):
     """
@@ -37,7 +37,8 @@ class RequestMessageProcessor(object):
         if message.verb is RequestVerb.SYSTEM:
             return
 
-        request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers)
+        request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers,
+                              body=message.content_formatted)
         self.http_client.fetch(
             request,
             lambda http_response: self.response(message, http_response)
@@ -56,20 +57,11 @@ class RequestMessageProcessor(object):
         :param HTTPResponse http_response: WebService response message
         :return:
         """
-        try:
-            response = ResponseMessage(ResponseVerb.RESPONSE, http_response.body.decode('utf8'), identifier=request.identifier)
-
-        except HTTPError as e:
-            # HTTPError is raised for non-200 responses; the response
-            # can be found in e.response.
-            print("Error: " + str(e))
-            #FIXME
-            return
-
-        except Exception as e:
-            # Other errors are possible, such as IOError.
-            print("Error: " + str(e))
-            return
+        if http_response.code == 405:
+            response = ResponseMessage.error(http_response.body.decode('utf8'), request.identifier)
+        else:
+            response = ResponseMessage(ResponseVerb.RESPONSE, http_response.body.decode('utf8'),
+                                       identifier=request.identifier)
 
         self.processed_listener(request, response)
 

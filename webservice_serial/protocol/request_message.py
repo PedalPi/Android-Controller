@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
 
 class RequestMessage(object):
     """
@@ -23,11 +25,15 @@ class RequestMessage(object):
     :param dict content:
     """
 
-    def __init__(self, identifier, verb, path, content):
+    def __init__(self, identifier, verb, path, content=None):
         self.identifier = identifier
         self.verb = verb
         self.path = path
         self.content = content
+
+    @property
+    def content_formatted(self):
+        return json.dumps(self.content) if self.content is not None else None
 
     def __str__(self):
         return '{} {} {}\n{}\nEOF'.format(self.identifier, self.verb, self.path, self.content)
