@@ -124,8 +124,8 @@ see the `WebService documentation`_.
 -  ``<IDENTIFIER>``: ``int`` Unique id that defines the request. This value will be used in a response message, identifying the original request message;
 -  ``<METHOD>``: ``string`` Possible values are:
 
-  - ``GET``, ``POST``, ``PUT``, ``DELETE`` Based in the `WebService documentation`_;
-  - ``SYSTEM`` Informs custom system messages. Actually this isn't used;
+  + ``GET``, ``POST``, ``PUT``, ``DELETE`` Based in the `WebService documentation`_;
+  + ``SYSTEM`` Informs custom system messages. Actually this isn't used;
 
 -  ``<DATA>``: Json data. If none, send an empty string;
 -  ``<URL>``: Resource identifier. Is necessary to informs the API version too (``/v1/<resouce>``). For the full list of resource, see http://pedalpi.github.io/WebService/
@@ -168,8 +168,8 @@ A ``Event`` message format is::
 
     <IDENTIFIER> EVENT <DATA>\n
 
--  ``EVENT``: ``string`` The string “EVENT”;
--  ``<DATA>``: ``string`` Json encoded data. If none, it will be an empty string;
+- ``EVENT``: ``string`` The string “EVENT”;
+- ``<DATA>``: ``string`` Json encoded data. If none, it will be an empty string;
 
 .. _WebService: https://github.com/PedalPi/WebService
 .. _DisplayView: https://github.com/PedalPi/DisplayView
