@@ -6,10 +6,9 @@ Serial communication.
 
 With it, is possible:
 
--  Use `DisplayView`_, an Android application that provides pedalboard
-   data for live presentations. Your focus is a speed management in live
-   performances.
-
+- Use `DisplayView`_, an Android application for manages quickly the
+  current pedalboard. Ideal for adjusting live performances and band
+  rehearsal.
 
 **Documentation:**
    https://github.com/PedalPi/WebServiceSerial
@@ -109,7 +108,7 @@ Example:
 ::
 
     1 PUT /current/bank/1/pedalboard/3
-    {}
+
     EOF
 
 Response
@@ -122,7 +121,7 @@ Response
 -  ``<IDENTIFIER>``: ``int``. A response returns the same ``int`` that the request
                               informs;
 -  ``RESPONSE``: String ``RESPONSES``;
--  ``<DATA>``: Json data. If none, send ``'{}'``
+-  ``<DATA>``: Json data. If none, send ``''``
 
 Notification
 ~~~~~~~~~~~~
@@ -134,7 +133,7 @@ This corresponds the websocket data notifications
     <IDENTIFIER> EVENT <DATA>
 
 -  ``EVENT``: String ``EVENT``
--  ``<DATA>``: Json data. If none, send ``'{}'``
+-  ``<DATA>``: Json data. If none, send ``''``
 
 Initialization
 ~~~~~~~~~~~~~~
@@ -159,7 +158,7 @@ The connected device can be request thinks, like:
 ::
 
     GET /v1/current
-    {}
+
     EOF
 
 -  Response
