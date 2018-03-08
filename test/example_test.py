@@ -12,20 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pluginsmanager.banks_manager import BanksManager
-from pluginsmanager.observer.mod_host.mod_host import ModHost
-
-from pluginsmanager.model.bank import Bank
-from pluginsmanager.model.pedalboard import Pedalboard
-from pluginsmanager.model.connection import Connection
-
-from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
-
-from pluginsmanager.model.system.system_effect import SystemEffect
+import unittest
 
 
-#if __name__ == '__main__':
-if True:
+#class ControllerTest(unittest.TestCase):
+#
+#    def test_all(self):
+#        test()
+
+
+def test():
     # Imports application
     from application.application import Application
 
@@ -42,6 +38,7 @@ if True:
     from webservice_serial.target.android.android_display_view import AndroidDisplayView
 
     target = AndroidDisplayView()
+
     application.register(WebServiceSerial(application, target))
 
     # Start Application
@@ -56,3 +53,7 @@ if True:
 
     import time
     time.sleep(5)
+
+
+if __name__ == '__main__':
+    test()

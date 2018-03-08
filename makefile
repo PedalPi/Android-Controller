@@ -19,7 +19,6 @@ clean-test:
 	rm -rf .cache
 	rm -f .coverage
 	rm -rf htmlcov
-	rm -rf test/autosaver_data
 
 clean-docs:
 	rm -rf docs/build
@@ -53,8 +52,7 @@ run:
 	@echo "Run option isn't created =)"
 
 test: clean-test
-	mkdir test/autosaver_data
-	pytest --cov=pluginsmanager
+	pytest --cov=webservice_serial
 
 test-docs:
 	python -m doctest *.rst -v
