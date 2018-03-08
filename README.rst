@@ -176,9 +176,13 @@ A ``Event`` message format is::
 .. _Application documentation: http://pedalpi-application.readthedocs.io/en/latest/
 .. _WebService documentation: http://pedalpi.github.io/WebService/
 
-Scripts
-=======
+Development
+===========
 
 Install locally to develop::
 
     python setup.py develop
+
+See makefile options::
+
+    make help
