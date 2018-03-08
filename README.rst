@@ -1,6 +1,15 @@
 WebService Serial
 =================
 
+.. image:: https://travis-ci.org/PedalPi/WebServiceSerial.svg?branch=master
+    :target: https://travis-ci.org/PedalPi/WebServiceSerial
+    :alt: Build Status
+
+.. image:: https://codecov.io/gh/PedalPi/WebServiceSerial/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/PedalPi/WebServiceSerial
+    :alt: Code coverage
+
+
 WebService Serial disposes the `WebService`_ communication via TCP
 Serial communication.
 
