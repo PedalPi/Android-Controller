@@ -17,9 +17,7 @@ install:
 
 script:
   - lv2ls
-  - make develop-install-requirements
   - make test
-  - #make docs
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

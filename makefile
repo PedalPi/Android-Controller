@@ -35,6 +35,7 @@ install-develop-requirements:
 	sudo apt-get install -y lv2-dev --no-install-recommends
 	pip3 install -U setuptools
 	pip3 install cffi
+	sudo apt-get install -y android-tools-adb --no-install-recommends
 
 install-docs-requirements:
 	pip3 install sphinx
