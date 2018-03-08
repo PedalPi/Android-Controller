@@ -31,7 +31,7 @@ def test():
     # Register WebService before WebServiceSerial
     from webservice.webservice import WebService
 
-    application.register(WebService(application))
+    application.register(WebService(application, port=3000))
 
     # Register WebServiceSerial after WebService
     from webservice_serial.webservice_serial import WebServiceSerial
