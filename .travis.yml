@@ -10,7 +10,7 @@ python:
 sudo: required
 
 install:
-  - make develop-install-requirements
+  - make install-develop-requirements
   - make install-tests-requirements
   - make install-docs-requirements
   - python setup.py develop
