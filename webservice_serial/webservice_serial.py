@@ -55,7 +55,6 @@ class WebServiceSerial(Component):
 
     @gen.coroutine
     def __try_connect(self, delay=0):
-        print(delay)
         self._log('Trying to connect with {}', self.target.name)
         self.target.init(self.application, WebServiceSerial.port)
         yield gen.sleep(delay)
