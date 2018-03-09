@@ -1,64 +1,47 @@
-import os
+from application.component.component import Component
 
 from android_controller.android_controller_client import AndroidControllerClient
-from android_controller.android_updates_observer import AndroidUpdatesObserver
-from android_controller.protocol.message import Message
-from android_controller.protocol.message_type import MessageType
-
-from application.architecture.Component import Component
-from application.controller.CurrentController import CurrentController
-from application.controller.EffectController import EffectController
-from application.controller.ParamController import ParamController
+from android_controller.request_message_processor import RequestMessageProcessor
 
 
 class AndroidController(Component):
-    def __init__(self, application, adb_command="adb"):
+    port = 8888
+
+    def __init__(self, application, target, ws_port=3000):
+        """
+        :param Application application: that AndroidController will be executed
+        :param Target target: Device protocol expected to communication
+        :param int ws_port: WebService port
+        """
         super(AndroidController, self).__init__(application)
-        self.client = AndroidControllerClient('localhost', 8888)
-        self.token = self.__class__.__name__
-        self.observer = AndroidUpdatesObserver(self.client, token=self.token)
-        self.adb_command = adb_command
+
+        self.target = target
+        self._client = AndroidControllerClient('localhost', AndroidController.port)
+        self.request_message_processor = RequestMessageProcessor(ws_port)
 
     def init(self):
-        self.start_android_application()
-        self.client.message_listener = self.process_message
-        self.register_observer(self.observer)
-        self.client.run()
+        self._client.connected_listener = self._on_connected
+        self._client.message_listener = self._process_message
 
-        self.client.connected_listener = lambda: self.client.send(Message(MessageType.PATCH, self.current_patch.json))
+        self.request_message_processor.processed_listener = self._on_processed
 
-    def start_android_application(self):
-        activity = 'com.pedalpi.pedalpi/com.pedalpi.pedalpi.PatchActivity'
-        port = 8888
+        self.target.init(self.application, AndroidController.port)
+        self._client.connect()
 
-        os.system(self.adb_command + ' shell am start -n ' + activity)
-        os.system(self.adb_command + ' forward --remove-all')
-        os.system(self.adb_command + ' forward tcp:' + str(port) + ' tcp:' + str(port))
+    def close(self):
+        self.request_message_processor.close()
+        self.target.close()
 
-    def process_message(self, message):
-        print("Message received:", message)
+    def _on_connected(self):
+        self.application.log('AndroidController - DisplayView connected')
 
-        current_patch = self.current_patch
+    def _process_message(self, message):
+        self.application.log('AndroidController - Message received: {}', message)
 
-        if message.message_type == MessageType.EFFECT:
-            effect_index = message['index']
-            effect = current_patch.effects[effect_index]
+        self.request_message_processor.process(message)
 
-            controller = self.controller(EffectController)
-            controller.toggleStatus(effect, self.token)
+    def _on_processed(self, request_message, response_message):
+        self.application.log('AndroidController - Message sent: {}', response_message)
 
-        elif message.message_type == MessageType.PARAM:
-            effect_index = message['effect']
-            param_index = message['param']
-            value = message['value']
-
-            effect = current_patch.effects[effect_index]
-            param = effect.params[param_index]
-
-            controller = self.controller(ParamController)
-            controller.updateValue(param, value, self.token)
-
-    @property
-    def current_patch(self):
-        controller = self.controller(CurrentController)
-        return controller.currentPatch
+        response_message = self.target.process(request_message, response_message)
+        self._client.send(response_message)
