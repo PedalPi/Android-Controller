@@ -33,12 +33,12 @@ class MessageBuilder(object):
 
         buffer = MessageBuilder.clean_buffer()
 
-        verb, path = buffer[0].split(" ")
+        identifier, verb, path = buffer[0].split(" ")
         data = buffer[1]
 
         verb = MessageBuilder.discover_verb(verb)
 
-        return MessageBuilder.generate_request_message(verb, path, data)
+        return RequestMessage(identifier, verb, path, data)
 
     @staticmethod
     def clean_buffer():
@@ -53,13 +53,3 @@ class MessageBuilder(object):
                 return verb
 
         return RequestVerb.SYSTEM
-
-    @staticmethod
-    def generate_request_message(verb, path, data):
-        """
-        :param RequestVerb verb: Verb
-        :param string path: Path
-        :param string data: Data
-        :return RequestMessage: message generated
-        """
-        return RequestMessage(verb, path, json.loads(data))

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tornado.httpclient import HTTPRequest, AsyncHTTPClient, HTTPError
+from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 
 from webservice_serial.protocol.request_verb import RequestVerb
 from webservice_serial.protocol.response_message import ResponseMessage
@@ -37,10 +37,11 @@ class RequestMessageProcessor(object):
         if message.verb is RequestVerb.SYSTEM:
             return
 
-        request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers)
+        request = HTTPRequest(self.url + message.path, method=message.verb.value, headers=self.headers,
+                              body=message.content_formatted)
         self.http_client.fetch(
             request,
-            lambda response: self.response(message, response=response)
+            lambda http_response: self.response(message, http_response)
         )
 
     @property
@@ -50,28 +51,20 @@ class RequestMessageProcessor(object):
         else:
             return None
 
-    def response(self, message, response):
+    def response(self, request, http_response):
         """
-        :param RequestMessage message: Request message
-        :param HTTPResponse response: Response message
+        :param RequestMessage request: Request message
+        :param HTTPResponse http_response: WebService response message
         :return:
         """
-        try:
-            response_message = ResponseMessage(ResponseVerb.RESPONSE, response.body.decode('utf8'))
+        body = http_response.body.decode('utf8') if http_response.body is not None else None
 
-        except HTTPError as e:
-            # HTTPError is raised for non-200 responses; the response
-            # can be found in e.response.
-            print("Error: " + str(e))
-            #FIXME
-            return
+        if http_response.code == 405:
+            response = ResponseMessage.error(body, request.identifier)
+        else:
+            response = ResponseMessage(ResponseVerb.RESPONSE, body, identifier=request.identifier)
 
-        except Exception as e:
-            # Other errors are possible, such as IOError.
-            print("Error: " + str(e))
-            return
-
-        self.processed_listener(message, response_message)
+        self.processed_listener(request, response)
 
     def close(self):
         self.http_client.close()
@@ -81,4 +74,4 @@ class RequestMessageProcessor(object):
         :param dict message:
         :return ResponseMessage:
         """
-        return ResponseMessage(ResponseVerb.EVENT, str(message))
+        return ResponseMessage(ResponseVerb.EVENT, message)

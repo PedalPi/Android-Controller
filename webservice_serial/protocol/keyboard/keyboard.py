@@ -15,12 +15,38 @@
 from enum import Enum
 
 
-class ResponseVerb(Enum):
-    RESPONSE = "RESPONSE"
-    EVENT = "EVENT"
-    KEYBOARD_EVENT = "KEYBOARD_EVENT"
+class KeyCode(Enum):
+    DOWN = "DOWN"
+    UP = "EVENT"
 
-    ERROR = "ERROR"
+
+class KeyNumber(Enum):
+    DPAD_UP = 0x00000013
+    DPAD_DOWN = 0x00000014
+    DPAD_LEFT = 0x00000015
+    DPAD_RIGHT = 0x00000016
+
+    DPAD_CENTER = 0x00000017
+
+    PLUS = 0x00000051
+    MINUS = 0x00000045
+
+
+class KeyEvent(object):
+    """
+    :param KeyCode code:
+    :param KeyNumber number:
+    """
+
+    def __init__(self, code, number):
+        self.code = code
+        self.number = number
+
+    def __dict__(self):
+        return {
+            'code': self.code.value,
+            'number': self.number.value
+        }
 
     def __str__(self):
-        return self.value
+        return str(self.__dict__())

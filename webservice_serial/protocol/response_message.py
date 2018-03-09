@@ -13,17 +13,24 @@
 # limitations under the License.
 
 import json
+from webservice_serial.protocol.response_verb import ResponseVerb
 
 
 class ResponseMessage(object):
+    """
+    :param ResponseVerb verb:
+    :param object content:
+    :param int identifier:
+    """
 
-    def __init__(self, verb, content=None):
-        """
-        :param ResponseVerb verb:
-        :param string content:
-        """
+    @staticmethod
+    def error(message, identifier=0):
+        return ResponseMessage(ResponseVerb.ERROR, '{"message": "'+message+'"}', identifier=identifier)
+
+    def __init__(self, verb, content=None, identifier=0):
+        self.identifier = identifier
         self.verb = verb
         self.content = json.dumps({}) if content is None else content
 
     def __str__(self):
-        return "{} {}\n".format(self.verb, self.content)
+        return "{} {} {}\n".format(self.identifier, self.verb, str(self.content))

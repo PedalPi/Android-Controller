@@ -21,7 +21,7 @@ class AndroidDisplayView(Target):
     :param string adb_command: Command that call the Android Debug Bridge
                                In Raspberry maybe be a `./adb` executable file
     """
-    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.pedalpi_display.MainActivity'
+    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.MainActivity'
 
     def __init__(self, adb_command="adb"):
         super(AndroidDisplayView, self).__init__()

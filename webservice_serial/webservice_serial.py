@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from application.component.component import Component
+from webservice_serial.protocol.response_verb import ResponseVerb
 
 from webservice_serial.request_message_processor import RequestMessageProcessor
 from webservice_serial.webservice_serial_client import WebServiceSerialClient
@@ -70,6 +71,9 @@ class WebServiceSerial(Component):
         self._log('{} connected', self.target.name)
 
     def _process_message(self, message):
+        """
+        :param RequestMessage message:
+        """
         self._log('Message received: {}', message)
 
         self.request_message_processor.process(message)

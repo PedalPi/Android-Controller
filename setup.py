@@ -41,6 +41,7 @@ setup(
     packages=[
         'webservice_serial',
         'webservice_serial/protocol',
+        'webservice_serial/protocol/keyboard',
         'webservice_serial/target',
         'webservice_serial/target/android',
     ],
