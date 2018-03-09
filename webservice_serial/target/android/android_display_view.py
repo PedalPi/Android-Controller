@@ -1,5 +1,5 @@
-from android_controller.target.target import Target
-from android_controller.target.android.adb import Adb
+from webservice_serial.target.target import Target
+from webservice_serial.target.android.adb import Adb
 
 
 class AndroidDisplayView(Target):
