@@ -13,13 +13,11 @@
 # limitations under the License.
 
 from application.component.component import Component
-from webservice_serial.protocol.response_verb import ResponseVerb
-
+from tornado import gen
+from tornado.ioloop import IOLoop
 from webservice_serial.request_message_processor import RequestMessageProcessor
 from webservice_serial.webservice_serial_client import WebServiceSerialClient
 from webservice_serial.websocket_client import WebSocketClient
-
-from time import sleep
 
 
 class WebServiceSerial(Component):
@@ -53,9 +51,14 @@ class WebServiceSerial(Component):
         self._try_connect()
 
     def _try_connect(self, delay=0):
+        IOLoop.current().spawn_callback(self.__try_connect, delay)
+
+    @gen.coroutine
+    def __try_connect(self, delay=0):
+        print(delay)
         self._log('Trying to connect with {}', self.target.name)
         self.target.init(self.application, WebServiceSerial.port)
-        sleep(delay)
+        yield gen.sleep(delay)
         self._client.connect()
 
     def _on_token_defined(self, token):

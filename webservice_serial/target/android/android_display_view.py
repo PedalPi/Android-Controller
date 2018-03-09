@@ -19,7 +19,7 @@ from webservice_serial.target.target import Target
 
 
 class AndroidDisplayView(Target):
-    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.activity.ResumeActivity'
+    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.activity.resume.ResumeActivity'
 
     def __init__(self):
         super(AndroidDisplayView, self).__init__()

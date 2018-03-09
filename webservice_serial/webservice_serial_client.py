@@ -34,7 +34,7 @@ class WebServiceSerialClient(object):
         self.disconnected_listener = lambda: print('Disconnected :(')
 
     def connect(self):
-        IOLoop.current().spawn_callback(lambda: self._connect())
+        IOLoop.current().spawn_callback(self._connect)
 
     @gen.coroutine
     def _connect(self):
