@@ -1,29 +1,51 @@
 import json
 
-from android_controller.protocol.message import Message
-from android_controller.protocol.message_type import MessageType
+from webservice_serial.protocol.request_message import RequestMessage
+from webservice_serial.protocol.request_verb import RequestVerb
 
 
 class MessageBuilder(object):
+    buffer = []
+
     @staticmethod
     def generate(message):
-        strings = message.split(" ")
+        """
+        :param string message: Message part
+        :return RequestMessage: Message received
+        """
+        if message != "EOF":
+            MessageBuilder.buffer.append(message)
+            return None
 
-        protocol_type = MessageBuilder.search_type(strings[0])
+        buffer = MessageBuilder.clean_buffer()
 
-        return MessageBuilder.generate_message(strings, protocol_type)
+        verb, path = buffer[0].split(" ")
+        data = buffer[1]
+
+        verb = MessageBuilder.discover_verb(verb)
+
+        return MessageBuilder.generate_request_message(verb, path, data)
 
     @staticmethod
-    def search_type(word):
-        for protocol_type in MessageType:
-            if protocol_type.value == word:
-                return protocol_type
-
-        return MessageType.ERROR
+    def clean_buffer():
+        buffer = MessageBuilder.buffer
+        MessageBuilder.buffer = []
+        return buffer
 
     @staticmethod
-    def generate_message(strings, protocol_type):
-        if len(strings) == 2:
-            return Message(protocol_type, json.loads(strings[1]))
-        else:
-            return Message(protocol_type)
+    def discover_verb(word):
+        for verb in RequestVerb:
+            if verb.value == word:
+                return verb
+
+        return RequestVerb.SYSTEM
+
+    @staticmethod
+    def generate_request_message(verb, path, data):
+        """
+        :param RequestVerb verb: Verb
+        :param string path: Path
+        :param string data: Data
+        :return RequestMessage: message generated
+        """
+        return RequestMessage(verb, path, json.loads(data))

@@ -1,10 +1,10 @@
-from android_controller.protocol.message_builder import MessageBuilder
-
 from tornado import gen
 from tornado.tcpclient import TCPClient
 
+from webservice_serial.protocol.message_builder import MessageBuilder
 
-class AndroidControllerClient(object):
+
+class WebServiceSerialClient(object):
 
     def __init__(self, address, port, encoding="utf-8"):
         self.address = address
@@ -12,11 +12,11 @@ class AndroidControllerClient(object):
         self.encoding = encoding
 
         self.stream = None
-        self.message_listener = lambda message: print(message)
+        self.message_listener = lambda message: ...
         self.connected_listener = lambda: ...
 
     @gen.coroutine
-    def run(self):
+    def connect(self):
         self.stream = yield TCPClient().connect(self.address, self.port)
         self.connected_listener()
 
@@ -24,7 +24,9 @@ class AndroidControllerClient(object):
             data = yield self.stream.read_until('\n'.encode(self.encoding))
             data = data.decode(self.encoding).strip()
 
-            self.message_listener(MessageBuilder.generate(data))
+            generated = MessageBuilder.generate(data)
+            if generated is not None:
+                self.message_listener(generated)
 
     def send(self, message):
         text = str(message).encode(self.encoding)
