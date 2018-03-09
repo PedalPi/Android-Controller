@@ -49,7 +49,7 @@ setup(
     package_data={},
 
     install_requires=[
-        'PedalPi-WebService>=0.3.0',
+        'PedalPi-WebService==0.3.0',
     ],
 
     classifiers=[

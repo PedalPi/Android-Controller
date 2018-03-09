@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7-dev"
+  - "nightly"
+
+sudo: required
+
+install:
+  - make install-develop-requirements
+  - make install-tests-requirements
+  - make install-docs-requirements
+  - python setup.py develop
+
+script:
+  - lv2ls
+  - make test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

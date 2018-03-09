@@ -1,6 +1,15 @@
 WebService Serial
 =================
 
+.. image:: https://travis-ci.org/PedalPi/WebServiceSerial.svg?branch=master
+    :target: https://travis-ci.org/PedalPi/WebServiceSerial
+    :alt: Build Status
+
+.. image:: https://codecov.io/gh/PedalPi/WebServiceSerial/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/PedalPi/WebServiceSerial
+    :alt: Code coverage
+
+
 WebService Serial disposes the `WebService`_ communication via TCP
 Serial communication.
 
@@ -176,9 +185,13 @@ A ``Event`` message format is::
 .. _Application documentation: http://pedalpi-application.readthedocs.io/en/latest/
 .. _WebService documentation: http://pedalpi.github.io/WebService/
 
-Scripts
-=======
+Development
+===========
 
 Install locally to develop::
 
     python setup.py develop
+
+See makefile options::
+
+    make help
