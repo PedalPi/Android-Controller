@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import subprocess
 
 from webservice_serial.target.android.adb import Adb
@@ -20,10 +19,6 @@ from webservice_serial.target.target import Target
 
 
 class AndroidDisplayView(Target):
-    """
-    :param string adb_command: Command that call the Android Debug Bridge
-                               In Raspberry maybe be a `./adb` executable file
-    """
     activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.activity.ResumeActivity'
 
     def __init__(self):
@@ -47,6 +42,7 @@ class AndroidDisplayView(Target):
             return "adb"
 
         path = self.application.path_data / "adb"
+
         if not path.is_file():
             self.application.log("AndroidDisplayView - Downloading adb pre-compiled")
             self._download_adb(path)
