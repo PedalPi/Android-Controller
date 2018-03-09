@@ -3,3 +3,4 @@ Version 0.2.0 - released mm/dd/18
  - Initial release
    - Change Android Controller -> WebServiceSerial: Now use WebService to reuse WebService methods
    - Defined Target: Initial target is Android, but is possible implements other targets for communication with other devices, as Arduino via USB Serial communication
+   - Try reconnect when connection is closed

@@ -15,6 +15,7 @@
 from tornado import gen
 from tornado.ioloop import IOLoop
 from tornado.tcpclient import TCPClient
+from tornado.iostream import StreamClosedError
 
 from webservice_serial.protocol.message_builder import MessageBuilder
 
@@ -30,26 +31,55 @@ class WebServiceSerialClient(object):
         self.message_listener = lambda message: ...
         self.connected_listener = lambda: ...
 
+        self.disconnected_listener = lambda: print('Disconnected :(')
+
     def connect(self):
         IOLoop.current().spawn_callback(lambda: self._connect())
 
     @gen.coroutine
     def _connect(self):
-        self.stream = yield TCPClient().connect(self.address, self.port)
-        self.connected_listener()
+        self.stream = yield self._try_connect()
+        if self.stream is None:
+            return
 
+        self.connected_listener()
+        yield self._start_read_data()
+
+    @gen.coroutine
+    def _try_connect(self):
+        try:
+            stream = yield TCPClient().connect(self.address, self.port)
+            return stream
+        except StreamClosedError as e:
+            self.disconnected_listener()
+            return None
+
+    @gen.coroutine
+    def _start_read_data(self):
         while True:
-            data = yield self.stream.read_until('\n'.encode(self.encoding))
+            data = yield self._read_data()
+            if data is None:
+                break
             data = data.decode(self.encoding).strip()
 
             generated = MessageBuilder.generate(data)
             if generated is not None:
                 self.message_listener(generated)
 
+    @gen.coroutine
+    def _read_data(self):
+        try:
+            data = yield self.stream.read_until('\n'.encode(self.encoding))
+        except StreamClosedError as e:
+            self.disconnected_listener()
+            return None
+
+        return data
+
     def send(self, message):
         text = str(message).encode(self.encoding)
         self.stream.write(text)
 
     def close(self):
-        if self.stream is not None:
-            self.stream.close()
+        if self.stream is not None and not self.stream.closed():
+                self.stream.close()
