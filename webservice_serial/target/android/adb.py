@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import subprocess
 
 
 class Adb(object):
@@ -28,8 +29,7 @@ class Adb(object):
         self.log = log
 
     def start(self, port, activity):
-        self.execute('shell am start -n {}'.format(activity))
-        #FIXME delay?
+        #self.execute('shell am start -n {}'.format(activity))
         #self.execute('forward --remove-all')
         self.execute('forward tcp:{} tcp:{}'.format(port, port))
 
@@ -42,3 +42,16 @@ class Adb(object):
 
     def close(self, port):
         self.execute('forward --remove tcp:{}'.format(port))
+
+    @staticmethod
+    def has_installed():
+        """
+        Check if the current system have the ``adb`` installed
+        :return:
+        """
+        try:
+            subprocess.call(["adb"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except FileNotFoundError:
+            return False
+
+        return True

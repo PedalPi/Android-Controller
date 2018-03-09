@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from webservice_serial.target.target import Target
+import os
+import subprocess
+
 from webservice_serial.target.android.adb import Adb
+from webservice_serial.target.target import Target
 
 
 class AndroidDisplayView(Target):
@@ -21,18 +24,48 @@ class AndroidDisplayView(Target):
     :param string adb_command: Command that call the Android Debug Bridge
                                In Raspberry maybe be a `./adb` executable file
     """
-    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.MainActivity'
+    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.activity.ResumeActivity'
 
-    def __init__(self, adb_command="adb"):
+    def __init__(self):
         super(AndroidDisplayView, self).__init__()
         self.adb = None
-        self.adb_command = adb_command
 
     def init(self, application, port):
         super(AndroidDisplayView, self).init(application, port)
 
-        self.adb = Adb(self.adb_command, application.log)
+        adb_command = self._discover_adb_command()
+        self.application.log('AndroidDisplayView - Android Debug Bridge command "{}"', adb_command)
+
+        self.adb = Adb(adb_command, application.log)
         self.adb.start(port, AndroidDisplayView.activity)
 
     def close(self):
         self.adb.close(self.port)
+
+    def _discover_adb_command(self):
+        if Adb.has_installed():
+            return "adb"
+
+        path = self.application.path_data / "adb"
+        if not path.is_file():
+            self.application.log("AndroidDisplayView - Downloading adb pre-compiled")
+            self._download_adb(path)
+
+        return path
+
+    def _download_adb(self, path):
+        if self._version() == 'Raspberry 3':
+            command = "wget -O {} https://github.com/PedalPi/adb-arm/raw/master/adb-rpi3".format(path)
+        else:
+            command = "wget -O {} https://github.com/PedalPi/adb-arm/raw/master/adb-arm-binary".format(path)
+
+        subprocess.call(command.split())
+        subprocess.call("chmod +x {}".format(path).split())
+
+    def _version(self):
+        command = 'cat /sys/firmware/devicetree/base/model'
+
+        if 'Raspberry Pi 3' in subprocess.check_output(command).decode('UTF-8').split('\n')[0]:
+            return 'Raspberry Pi 3'
+
+        return ""
