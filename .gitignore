@@ -1,4 +1,5 @@
 .idea/
+PedalPi/
 **.pyc
 __pycache__/
 **.egg-info/
