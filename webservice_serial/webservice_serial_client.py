@@ -34,7 +34,7 @@ class WebServiceSerialClient(object):
         self.disconnected_listener = lambda: print('Disconnected :(')
 
     def connect(self):
-        IOLoop.current().spawn_callback(lambda: self._connect())
+        IOLoop.current().spawn_callback(self._connect)
 
     @gen.coroutine
     def _connect(self):
@@ -77,10 +77,13 @@ class WebServiceSerialClient(object):
         return data
 
     def send(self, message):
+        if self.stream is None:
+            return
+
         try:
             text = str(message).encode(self.encoding)
             self.stream.write(text)
-        except StreamClosedError as e:
+        except StreamClosedError:
             self.disconnected_listener()
 
     def close(self):

@@ -19,7 +19,7 @@ from webservice_serial.target.target import Target
 
 
 class AndroidDisplayView(Target):
-    activity = 'io.github.pedalpi.pedalpi_display/io.github.pedalpi.displayview.activity.ResumeActivity'
+    activity = 'io.github.pedalpi.displayview/io.github.pedalpi.displayview.activity.resume.ResumeActivity'
 
     def __init__(self):
         super(AndroidDisplayView, self).__init__()
@@ -35,7 +35,8 @@ class AndroidDisplayView(Target):
         self.adb.start(port, AndroidDisplayView.activity)
 
     def close(self):
-        self.adb.close(self.port)
+        if self.adb is not None:
+            self.adb.close(self.port)
 
     def _discover_adb_command(self):
         if Adb.has_installed():

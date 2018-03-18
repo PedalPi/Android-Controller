@@ -27,8 +27,8 @@ class WebSocketClient(object):
     def __init__(self, port):
         self.port = port
         self.connection = None
-        self.token_defined_listener = lambda token: ...
         self.message_listener = lambda message: ...
+        self.on_connected_listener = lambda: ...
 
     @property
     def url(self):
@@ -41,6 +41,7 @@ class WebSocketClient(object):
     @gen.coroutine
     def _connect(self):
         self.connection = yield websocket_connect(self.url)
+        self.on_connected_listener()
         self._await_messages(self.connection)
 
     @gen.coroutine
@@ -51,12 +52,12 @@ class WebSocketClient(object):
                 break
 
             message = json.loads(msg)
-
-            if message['type'] == 'TOKEN':
-                self.token_defined_listener(message['value'])
-            else:
-                self.message_listener(message)
+            self.message_listener(message)
 
     def close(self):
         if self.connection is not None:
             self.connection.close()
+
+    def register(self, token):
+        data = json.dumps({'register': token})
+        self.connection.write_message(data)
