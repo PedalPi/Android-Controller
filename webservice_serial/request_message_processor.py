@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tornado.httpclient import HTTPRequest, AsyncHTTPClient
+import json
 
+from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 from webservice_serial.protocol.request_verb import RequestVerb
 from webservice_serial.protocol.response_message import ResponseMessage
 from webservice_serial.protocol.response_verb import ResponseVerb
@@ -24,11 +25,18 @@ class RequestMessageProcessor(object):
     :param port: Port that WebService are executing
     """
 
-    def __init__(self, port, token=None):
+    def __init__(self, port):
         self.http_client = AsyncHTTPClient()
         self.url = 'http://localhost:{}'.format(port)
         self.processed_listener = lambda message, response: ...
-        self.token = token
+        self.token = None
+        self.auth_listener = lambda response: ...
+
+    def auth(self, username, password):
+        auth = json.dumps({'username': username, 'password': password})
+
+        request = HTTPRequest('{}/v1/auth'.format(self.url), method='POST', body=auth)
+        self.http_client.fetch(request, lambda http_response: self.auth_listener(http_response))
 
     def process(self, message):
         """
@@ -47,7 +55,7 @@ class RequestMessageProcessor(object):
     @property
     def headers(self):
         if self.token is not None:
-            return {'x-xsrf-token': self.token}
+            return {'Authorization': 'bearer {}'.format(self.token)}
         else:
             return None
 

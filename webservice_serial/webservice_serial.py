@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
 from application.component.component import Component
 from tornado import gen
 from tornado.ioloop import IOLoop
 from webservice_serial.request_message_processor import RequestMessageProcessor
 from webservice_serial.webservice_serial_client import WebServiceSerialClient
 from webservice_serial.websocket_client import WebSocketClient
+from webservice.properties import WSProperties
 
 
 class WebServiceSerial(Component):
@@ -42,9 +45,21 @@ class WebServiceSerial(Component):
         self._client.disconnected_listener = lambda: self._try_connect(5)
 
         self.request_message_processor.processed_listener = self._on_processed
+        self.request_message_processor.auth_listener = self._on_auth
 
-        self._websocket_client.token_defined_listener = self._on_token_defined
         self._websocket_client.message_listener = self._on_event
+        self._websocket_client.on_connected_listener = \
+            lambda: self._websocket_client.register(self.request_message_processor.token)
+
+        self.request_message_processor.auth(WSProperties.COMPONENT_USERNAME, WSProperties.COMPONENT_PASSWORD)
+
+    def _on_auth(self, response):
+        """
+        :param tornado.httpclient.HTTPResponse response:
+        :return:
+        """
+        response = json.loads(response.body.decode('utf8'))
+        self.request_message_processor.token = response['token']
 
         self._websocket_client.connect()
 
@@ -59,9 +74,6 @@ class WebServiceSerial(Component):
         self.target.init(self.application, WebServiceSerial.port)
         yield gen.sleep(delay)
         self._client.connect()
-
-    def _on_token_defined(self, token):
-        self.request_message_processor.token = token
 
     def close(self):
         self.request_message_processor.close()

@@ -35,7 +35,8 @@ class AndroidDisplayView(Target):
         self.adb.start(port, AndroidDisplayView.activity)
 
     def close(self):
-        self.adb.close(self.port)
+        if self.adb is not None:
+            self.adb.close(self.port)
 
     def _discover_adb_command(self):
         if Adb.has_installed():

@@ -8,3 +8,4 @@ Version 0.2.0 - released 03/dd/18
    - Try reconnect when connection is closed
    - Check if is ADB has installed
    - Try download the ADB if isn't installed
+   - Support webservice Auth
