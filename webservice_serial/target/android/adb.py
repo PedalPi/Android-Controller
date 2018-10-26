@@ -43,6 +43,15 @@ class Adb(object):
     def close(self, port):
         self.execute('forward --remove tcp:{}'.format(port))
 
+    def usb_support(self):
+        """
+        Check if has USB Accessory Api support (AOA)
+
+        Based on http://jjmilburn.github.io/2017/05/08/Android-AOA-Support/
+        """
+        usb_permissions = subprocess.check_output("adb shell ls /system/etc/permissions | grep 'usb'", shell=True).split()
+        return len(usb_permissions) > 0
+
     @staticmethod
     def has_installed():
         """
